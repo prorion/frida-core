@@ -1663,9 +1663,9 @@ namespace Frida.Agent {
 	}
 
 	namespace Environment {
-		[CCode (cname = "_frida_agent_environment_myagnt_init")]
+		[CCode (cname = "myagnt_init_memory")]
 		public extern void _myagnt_init ();
-		[CCode (cname = "_frida_agent_environment_myagnt_deinit")]
+		[CCode (cname = "myagnt_deinit_memory")]
 		public extern void _myagnt_deinit ();
 	}
 
