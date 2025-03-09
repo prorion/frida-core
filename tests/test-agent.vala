@@ -437,12 +437,12 @@ Interceptor.attach(Module.getExportByName('libsystem_kernel.dylib', 'open'), () 
 #endif
 #if IOS || TVOS || ANDROID || QNX
 			var deployment_dir = Path.get_dirname (Frida.Test.Process.current.filename);
-			agent_filename = Path.build_filename (deployment_dir, "frida-agent." + shlib_extension);
+			agent_filename = Path.build_filename (deployment_dir, "myagnt." + shlib_extension);
 #else
 			var frida_root_dir = Path.get_dirname (Path.get_dirname (Frida.Test.Process.current.filename));
-			agent_filename = Path.build_filename (frida_root_dir, "lib", "frida", "frida-agent." + shlib_extension);
+			agent_filename = Path.build_filename (frida_root_dir, "lib", "frida", "myagnt." + shlib_extension);
 			if (!FileUtils.test (agent_filename, FileTest.EXISTS))
-				agent_filename = Path.build_filename (frida_root_dir, "lib", "agent", "frida-agent." + shlib_extension);
+				agent_filename = Path.build_filename (frida_root_dir, "lib", "agent", "myagnt." + shlib_extension);
 #endif
 
 			try {

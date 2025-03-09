@@ -479,7 +479,7 @@ namespace Frida {
 				promise.resolve (entry);
 			} catch (GLib.Error e) {
 				if (e is IOError.CANCELLED && (cancellable == null || !cancellable.is_cancelled ())) {
-					e = new Error.PROCESS_NOT_RESPONDING ("Process with pid %u either refused to load frida-agent, " +
+					e = new Error.PROCESS_NOT_RESPONDING ("Process with pid %u either refused to load myagnt, " +
 						"or terminated during injection", pid);
 				}
 

@@ -113,7 +113,7 @@ namespace Frida {
 			injector = new Winjector (helper, false, tempdir);
 			injector.uninjected.connect (on_uninjected);
 
-			agent = new AgentDescriptor (PathTemplate ("<arch>\\frida-agent.dll"),
+			agent = new AgentDescriptor (PathTemplate ("<arch>\\myagnt.dll"),
 				new Bytes.static (Frida.Data.Agent.get_frida_agent_arm64_dll_blob ().data),
 				new Bytes.static (Frida.Data.Agent.get_frida_agent_x86_64_dll_blob ().data),
 				new Bytes.static (Frida.Data.Agent.get_frida_agent_x86_dll_blob ().data),
