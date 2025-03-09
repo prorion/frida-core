@@ -13,6 +13,8 @@
 # include <gioopenssl.h>
 #endif
 
+extern void myagnt_agent_main (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
+
 void
 _myagnt_agent_environment_init (void)
 {
@@ -27,7 +29,7 @@ _myagnt_agent_environment_init (void)
   gum_init_embedded ();
   gio_init ();
 
-  g_thread_set_garbage_handler (_myagnt_agent_on_pending_thread_garbage, NULL);
+  g_thread_set_garbage_handler (_frida_agent_myagnt_agent_on_pending_thread_garbage, NULL);
 
 #ifdef HAVE_GIOOPENSSL
   g_io_module_openssl_register ();
@@ -43,6 +45,8 @@ _myagnt_agent_environment_init (void)
    */
   bsd_signal (G_MAXINT32, SIG_DFL);
 #endif
+
+  gum_internal_heap_ref ();
 }
 
 void
