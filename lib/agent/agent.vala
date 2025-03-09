@@ -115,7 +115,7 @@ namespace Frida.Agent {
 
 		public static void create_and_run (string agent_parameters, ref Frida.UnloadPolicy unload_policy,
 				void * opaque_injector_state) {
-			Environment._init ();
+			Environment._myagnt_init ();
 
 			{
 				Gum.MemoryRange? mapped_range = null;
@@ -183,7 +183,7 @@ namespace Frida.Agent {
 				ignore_scope = null;
 			}
 
-			Environment._deinit ();
+			Environment._myagnt_deinit ();
 		}
 
 		public static void resume_after_transition (ref Frida.UnloadPolicy unload_policy, void * opaque_injector_state) {
@@ -218,7 +218,7 @@ namespace Frida.Agent {
 				ignore_scope = null;
 			}
 
-			Environment._deinit ();
+			Environment._myagnt_deinit ();
 		}
 
 		private static void release_shared_instance () {
@@ -1361,7 +1361,7 @@ namespace Frida.Agent {
 				if (nb_api.load_library_ext != null && nb_api.flavor == LEGACY) {
 					/*
 					 * FIXME: We should be using LoadLibraryExt() on modern systems also, but we need to figure out
-					 *        how to get the namespace pointer for the namespace named “classloader-namespace”.
+					 *        how to get the namespace pointer for the namespace named "classloader-namespace".
 					 */
 					var classloader_namespace = (void *) 3;
 					emulated_agent = nb_api.load_library_ext (emulated_agent_path, RTLD_LAZY, classloader_namespace);
@@ -1372,7 +1372,7 @@ namespace Frida.Agent {
 					throw new Error.NOT_SUPPORTED ("Process is not using emulation");
 
 				/*
-				 * We name our entrypoint “JNI_OnLoad” so that the NativeBridge implementation
+				 * We name our entrypoint "JNI_OnLoad" so that the NativeBridge implementation
 				 * recognizes its name and we don't have to register it.
 				 */
 				emulated_entrypoint = (NBOnLoadFunc) nb_api.get_trampoline (emulated_agent, "JNI_OnLoad");
@@ -1662,8 +1662,8 @@ namespace Frida.Agent {
 	}
 
 	namespace Environment {
-		public extern void _init ();
-		public extern void _deinit ();
+		public extern void _myagnt_init ();
+		public extern void _myagnt_deinit ();
 	}
 
 	private Mutex gc_mutex;

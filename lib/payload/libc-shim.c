@@ -28,14 +28,14 @@ frida_run_atexit_handlers (void)
 # ifdef HAVE_ASAN
 
 __attribute__ ((constructor)) static void
-frida_init_memory (void)
+myagnt_init_memory (void)
 {
   asm volatile ("");
 }
 
 #  ifndef HAVE_DARWIN
 __attribute__ ((destructor)) static void
-frida_deinit_memory (void)
+myagnt_deinit_memory (void)
 {
   asm volatile ("");
 }
@@ -64,7 +64,7 @@ static guint frida_atexit_count = 0;
 static GumSpinlock frida_shim_lock = GUM_SPINLOCK_INIT;
 
 __attribute__ ((constructor)) static void
-frida_init_memory (void)
+myagnt_init_memory (void)
 {
   if (!frida_heap_initialized)
   {
@@ -85,7 +85,7 @@ frida_init_memory (void)
 #ifndef HAVE_DARWIN
 
 __attribute__ ((destructor)) static void
-frida_deinit_memory (void)
+myagnt_deinit_memory (void)
 {
   gum_internal_heap_unref ();
 }
@@ -114,7 +114,7 @@ __cxa_atexit (void (* func) (void *), void * arg, void * dso_handle)
 {
   FridaExitEntry * entry;
 
-  frida_init_memory ();
+  myagnt_init_memory ();
 
   FRIDA_SHIM_LOCK ();
   frida_atexit_count++;
