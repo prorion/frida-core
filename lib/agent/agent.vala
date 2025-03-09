@@ -1663,7 +1663,9 @@ namespace Frida.Agent {
 	}
 
 	namespace Environment {
+		[CCode (cname = "_frida_agent_environment_myagnt_init")]
 		public extern void _myagnt_init ();
+		[CCode (cname = "_frida_agent_environment_myagnt_deinit")]
 		public extern void _myagnt_deinit ();
 	}
 

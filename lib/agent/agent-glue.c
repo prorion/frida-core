@@ -16,7 +16,7 @@
 extern void myagnt_agent_main (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
 
 void
-_myagnt_agent_environment_init (void)
+_frida_agent_environment_myagnt_init (void)
 {
 #ifdef HAVE_MUSL
   static gboolean been_here = FALSE;
@@ -50,7 +50,7 @@ _myagnt_agent_environment_init (void)
 }
 
 void
-_myagnt_agent_environment_deinit (void)
+_frida_agent_environment_myagnt_deinit (void)
 {
 #ifndef HAVE_MUSL
   gum_shutdown ();
