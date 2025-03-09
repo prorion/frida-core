@@ -30,7 +30,7 @@ struct _FridaAgentBridgeState {
 static FridaUnloadPolicy unload_policy = FRIDA_UNLOAD_POLICY_IMMEDIATE;
 static void * injector_state = NULL;
 
-extern void frida_agent_main (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
+static void frida_agent_main_impl (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
 extern void _frida_agent_myagnt_agent_on_pending_thread_garbage (void * data);
 
 void
@@ -94,7 +94,7 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 {
   FridaAgentBridgeState * state = (FridaAgentBridgeState *) reserved;
 
-  frida_agent_main (state->agent_parameters, &state->unload_policy, state->injector_state);
+  frida_agent_main_impl (state->agent_parameters, &state->unload_policy, state->injector_state);
 
   return JNI_VERSION_1_6;
 }
@@ -104,5 +104,11 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 MYAGNT_EXPORT void
 frida_agent_main (const char * data)
 {
-    frida_agent_main (data, &unload_policy, injector_state);
+    frida_agent_main_impl (data, &unload_policy, injector_state);
+}
+
+static void
+frida_agent_main_impl (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state)
+{
+  // 실제 구현은 여기에...
 }
