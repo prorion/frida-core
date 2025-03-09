@@ -1,4 +1,4 @@
-namespace Frida.Agent {
+namespace Myagnt {
 	public void main (string agent_parameters, ref Frida.UnloadPolicy unload_policy, void * injector_state) {
 		if (Runner.shared_instance == null)
 			Runner.create_and_run (agent_parameters, ref unload_policy, injector_state);
@@ -1361,7 +1361,7 @@ namespace Frida.Agent {
 				if (nb_api.load_library_ext != null && nb_api.flavor == LEGACY) {
 					/*
 					 * FIXME: We should be using LoadLibraryExt() on modern systems also, but we need to figure out
-					 *        how to get the namespace pointer for the namespace named “classloader-namespace”.
+					 *        how to get the namespace pointer for the namespace named "classloader-namespace".
 					 */
 					var classloader_namespace = (void *) 3;
 					emulated_agent = nb_api.load_library_ext (emulated_agent_path, RTLD_LAZY, classloader_namespace);
@@ -1372,7 +1372,7 @@ namespace Frida.Agent {
 					throw new Error.NOT_SUPPORTED ("Process is not using emulation");
 
 				/*
-				 * We name our entrypoint “JNI_OnLoad” so that the NativeBridge implementation
+				 * We name our entrypoint "JNI_OnLoad" so that the NativeBridge implementation
 				 * recognizes its name and we don't have to register it.
 				 */
 				emulated_entrypoint = (NBOnLoadFunc) nb_api.get_trampoline (emulated_agent, "JNI_OnLoad");
