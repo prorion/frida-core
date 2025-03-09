@@ -14,7 +14,7 @@
 #endif
 
 void
-_frida_agent_environment_init (void)
+_myagnt_environment_init (void)
 {
 #ifdef HAVE_MUSL
   static gboolean been_here = FALSE;
@@ -27,7 +27,7 @@ _frida_agent_environment_init (void)
   gum_init_embedded ();
   gio_init ();
 
-  g_thread_set_garbage_handler (_frida_agent_on_pending_thread_garbage, NULL);
+  g_thread_set_garbage_handler (_myagnt_on_pending_thread_garbage, NULL);
 
 #ifdef HAVE_GIOOPENSSL
   g_io_module_openssl_register ();
@@ -46,7 +46,7 @@ _frida_agent_environment_init (void)
 }
 
 void
-_frida_agent_environment_deinit (void)
+_myagnt_environment_deinit (void)
 {
 #ifndef HAVE_MUSL
   gum_shutdown ();
@@ -72,7 +72,7 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 {
   FridaAgentBridgeState * state = reserved;
 
-  frida_agent_main (state->agent_parameters, &state->unload_policy, state->injector_state);
+  myagnt_main (state->agent_parameters, &state->unload_policy, state->injector_state);
 
   return JNI_VERSION_1_6;
 }

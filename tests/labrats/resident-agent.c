@@ -48,7 +48,7 @@ on_unload (void)
 #endif
 
 void
-frida_agent_main (const char * data, bool * stay_resident)
+myagnt_main (const char * data, bool * stay_resident)
 {
   (void) data;
 

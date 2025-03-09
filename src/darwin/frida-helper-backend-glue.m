@@ -419,14 +419,14 @@ static void frida_inject_instance_on_mach_thread_dead (void * context);
 static void frida_inject_instance_join_posix_thread (FridaInjectInstance * self, mach_port_t posix_thread);
 static void frida_inject_instance_on_posix_thread_dead (void * context);
 
-static gboolean frida_agent_context_init (FridaAgentContext * self, const FridaAgentDetails * details, const FridaInjectPayloadLayout * layout,
+static gboolean myagnt_context_init (FridaAgentContext * self, const FridaAgentDetails * details, const FridaInjectPayloadLayout * layout,
     mach_vm_address_t payload_base, mach_vm_size_t payload_size, GumDarwinModuleResolver * resolver, GumDarwinMapper * mapper, GError ** error);
-static gboolean frida_agent_context_init_functions (FridaAgentContext * self, GumDarwinModuleResolver * resolver, GumDarwinMapper * mapper,
+static gboolean myagnt_context_init_functions (FridaAgentContext * self, GumDarwinModuleResolver * resolver, GumDarwinMapper * mapper,
     GError ** error);
 
-static void frida_agent_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+static void myagnt_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper);
-static void frida_agent_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+static void myagnt_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper);
 
 static gboolean frida_convert_thread_state_for_task (mach_port_t task, thread_state_flavor_t flavor, gconstpointer in_state,
@@ -2320,12 +2320,12 @@ _frida_darwin_helper_backend_inject_into_task (FridaDarwinHelperBackend * self, 
   kr = mach_vm_protect (task, payload_address + layout.stack_guard_offset, layout.stack_guard_size, FALSE, VM_PROT_NONE);
   CHECK_MACH_RESULT (kr, ==, KERN_SUCCESS, "mach_vm_protect");
 
-  if (!frida_agent_context_init (&agent_ctx, &details, &layout, payload_address, instance->payload_size, resolver, mapper, error))
+  if (!myagnt_context_init (&agent_ctx, &details, &layout, payload_address, instance->payload_size, resolver, mapper, error))
     goto failure;
 
-  frida_agent_context_emit_mach_stub_code (&agent_ctx, mach_stub_code, resolver, mapper);
+  myagnt_context_emit_mach_stub_code (&agent_ctx, mach_stub_code, resolver, mapper);
 
-  frida_agent_context_emit_pthread_stub_code (&agent_ctx, pthread_stub_code, resolver, mapper);
+  myagnt_context_emit_pthread_stub_code (&agent_ctx, pthread_stub_code, resolver, mapper);
 
   if (gum_query_is_rwx_supported () || !gum_code_segment_is_supported ())
   {
@@ -4237,7 +4237,7 @@ frida_inject_instance_task_did_not_exec (FridaInjectInstance * instance)
 }
 
 static gboolean
-frida_agent_context_init (FridaAgentContext * self, const FridaAgentDetails * details, const FridaInjectPayloadLayout * layout,
+myagnt_context_init (FridaAgentContext * self, const FridaAgentDetails * details, const FridaInjectPayloadLayout * layout,
     mach_vm_address_t payload_base, mach_vm_size_t payload_size, GumDarwinModuleResolver * resolver, GumDarwinMapper * mapper, GError ** error)
 {
   bzero (self, sizeof (FridaAgentContext));
@@ -4250,7 +4250,7 @@ frida_agent_context_init (FridaAgentContext * self, const FridaAgentDetails * de
   self->constructed = FALSE;
   self->module_handle = NULL;
 
-  if (!frida_agent_context_init_functions (self, resolver, mapper, error))
+  if (!myagnt_context_init_functions (self, resolver, mapper, error))
     return FALSE;
 
   self->mach_port_allocate_right = MACH_PORT_RIGHT_RECEIVE;
@@ -4288,19 +4288,19 @@ frida_agent_context_init (FridaAgentContext * self, const FridaAgentDetails * de
   return TRUE;
 }
 
-#define FRIDA_AGENT_CONTEXT_RESOLVE(field) \
+#define myagnt_CONTEXT_RESOLVE(field) \
   G_STMT_START \
   { \
-    FRIDA_AGENT_CONTEXT_TRY_RESOLVE (field); \
+    myagnt_CONTEXT_TRY_RESOLVE (field); \
     if (self->field##_impl == 0) \
       goto missing_symbol; \
   } \
   G_STMT_END
-#define FRIDA_AGENT_CONTEXT_TRY_RESOLVE(field) \
+#define myagnt_CONTEXT_TRY_RESOLVE(field) \
   self->field##_impl = gum_strip_code_address (gum_darwin_module_resolver_find_export_address (resolver, module, G_STRINGIFY (field)))
 
 static gboolean
-frida_agent_context_init_functions (FridaAgentContext * self, GumDarwinModuleResolver * resolver, GumDarwinMapper * mapper, GError ** error)
+myagnt_context_init_functions (FridaAgentContext * self, GumDarwinModuleResolver * resolver, GumDarwinMapper * mapper, GError ** error)
 {
   gboolean success = FALSE;
   GumDarwinModule * module;
@@ -4308,26 +4308,26 @@ frida_agent_context_init_functions (FridaAgentContext * self, GumDarwinModuleRes
   module = gum_darwin_module_resolver_find_module_by_name (resolver, "/usr/lib/system/libsystem_kernel.dylib");
   if (module == NULL)
     goto no_libc;
-  FRIDA_AGENT_CONTEXT_RESOLVE (mach_task_self);
-  FRIDA_AGENT_CONTEXT_RESOLVE (mach_thread_self);
-  FRIDA_AGENT_CONTEXT_RESOLVE (mach_port_allocate);
-  FRIDA_AGENT_CONTEXT_RESOLVE (mach_msg_receive);
-  FRIDA_AGENT_CONTEXT_RESOLVE (mach_port_destroy);
-  FRIDA_AGENT_CONTEXT_RESOLVE (thread_terminate);
+  myagnt_CONTEXT_RESOLVE (mach_task_self);
+  myagnt_CONTEXT_RESOLVE (mach_thread_self);
+  myagnt_CONTEXT_RESOLVE (mach_port_allocate);
+  myagnt_CONTEXT_RESOLVE (mach_msg_receive);
+  myagnt_CONTEXT_RESOLVE (mach_port_destroy);
+  myagnt_CONTEXT_RESOLVE (thread_terminate);
   g_object_unref (module);
   module = NULL;
 
   module = gum_darwin_module_resolver_find_module_by_name (resolver, "/usr/lib/system/libsystem_pthread.dylib");
   if (module == NULL)
     goto no_libc;
-  FRIDA_AGENT_CONTEXT_TRY_RESOLVE (pthread_create_from_mach_thread);
+  myagnt_CONTEXT_TRY_RESOLVE (pthread_create_from_mach_thread);
   if (self->pthread_create_from_mach_thread_impl != 0)
     self->pthread_create_impl = self->pthread_create_from_mach_thread_impl;
   else
-    FRIDA_AGENT_CONTEXT_RESOLVE (pthread_create);
-  FRIDA_AGENT_CONTEXT_TRY_RESOLVE (pthread_threadid_np);
-  FRIDA_AGENT_CONTEXT_RESOLVE (pthread_detach);
-  FRIDA_AGENT_CONTEXT_RESOLVE (pthread_self);
+    myagnt_CONTEXT_RESOLVE (pthread_create);
+  myagnt_CONTEXT_TRY_RESOLVE (pthread_threadid_np);
+  myagnt_CONTEXT_RESOLVE (pthread_detach);
+  myagnt_CONTEXT_RESOLVE (pthread_self);
   g_object_unref (module);
   module = NULL;
 
@@ -4336,9 +4336,9 @@ frida_agent_context_init_functions (FridaAgentContext * self, GumDarwinModuleRes
     module = gum_darwin_module_resolver_find_module_by_name (resolver, "/usr/lib/system/libdyld.dylib");
     if (module == NULL)
       goto no_libc;
-    FRIDA_AGENT_CONTEXT_RESOLVE (dlopen);
-    FRIDA_AGENT_CONTEXT_RESOLVE (dlsym);
-    FRIDA_AGENT_CONTEXT_RESOLVE (dlclose);
+    myagnt_CONTEXT_RESOLVE (dlopen);
+    myagnt_CONTEXT_RESOLVE (dlsym);
+    myagnt_CONTEXT_RESOLVE (dlclose);
     g_object_unref (module);
     module = NULL;
   }
@@ -4372,11 +4372,11 @@ beach:
 
 #ifdef HAVE_I386
 
-static void frida_agent_context_emit_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
-static void frida_agent_context_emit_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
+static void myagnt_context_emit_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
+static void myagnt_context_emit_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
 
 static void
-frida_agent_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   FridaAgentEmitContext ctx;
@@ -4386,14 +4386,14 @@ frida_agent_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code
   gum_x86_writer_set_target_cpu (&ctx.cw, resolver->cpu_type);
   ctx.mapper = mapper;
 
-  frida_agent_context_emit_mach_stub_body (self, &ctx);
+  myagnt_context_emit_mach_stub_body (self, &ctx);
   gum_x86_writer_put_breakpoint (&ctx.cw);
 
   gum_x86_writer_clear (&ctx.cw);
 }
 
 static void
-frida_agent_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   FridaAgentEmitContext ctx;
@@ -4418,7 +4418,7 @@ frida_agent_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * c
   else
     gum_x86_writer_put_mov_reg_reg (&ctx.cw, GUM_X86_XBX, GUM_X86_XDI);
 
-  frida_agent_context_emit_pthread_stub_body (self, &ctx);
+  myagnt_context_emit_pthread_stub_body (self, &ctx);
 
   gum_x86_writer_put_add_reg_imm (&ctx.cw, GUM_X86_XSP, locals_size);
 
@@ -4445,7 +4445,7 @@ frida_agent_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * c
     gum_x86_writer_put_call_reg_offset_ptr_with_aligned_arguments (&ctx->cw, GUM_CALL_CAPI, GUM_X86_XBX, G_STRUCT_OFFSET (FridaAgentContext, fun), __VA_ARGS__)
 
 static void
-frida_agent_context_emit_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
+myagnt_context_emit_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
 {
   const gchar * again = "again";
 
@@ -4493,7 +4493,7 @@ frida_agent_context_emit_mach_stub_body (FridaAgentContext * self, FridaAgentEmi
 }
 
 static void
-frida_agent_context_emit_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
+myagnt_context_emit_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
 {
   gssize pointer_size, injector_state_offset;
   const gchar * skip_construction = "skip_construction";
@@ -4626,40 +4626,40 @@ frida_agent_context_emit_pthread_stub_body (FridaAgentContext * self, FridaAgent
  * ARM 32- and 64-bit
  */
 
-static void frida_agent_context_emit_arm_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+static void myagnt_context_emit_arm_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper);
-static void frida_agent_context_emit_arm_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+static void myagnt_context_emit_arm_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper);
-static void frida_agent_context_emit_arm_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
-static void frida_agent_context_emit_arm_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
-static void frida_agent_context_emit_arm_load_reg_with_ctx_value (arm_reg reg, guint field_offset, GumThumbWriter * tw);
-static void frida_agent_context_emit_arm_store_reg_in_ctx_value (guint field_offset, arm_reg reg, GumThumbWriter * tw);
+static void myagnt_context_emit_arm_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
+static void myagnt_context_emit_arm_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
+static void myagnt_context_emit_arm_load_reg_with_ctx_value (arm_reg reg, guint field_offset, GumThumbWriter * tw);
+static void myagnt_context_emit_arm_store_reg_in_ctx_value (guint field_offset, arm_reg reg, GumThumbWriter * tw);
 
-static void frida_agent_context_emit_arm64_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+static void myagnt_context_emit_arm64_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper);
-static void frida_agent_context_emit_arm64_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+static void myagnt_context_emit_arm64_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper);
-static void frida_agent_context_emit_arm64_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
-static void frida_agent_context_emit_arm64_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
+static void myagnt_context_emit_arm64_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
+static void myagnt_context_emit_arm64_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx);
 
 static void
-frida_agent_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   if (resolver->cpu_type == GUM_CPU_ARM)
-    frida_agent_context_emit_arm_mach_stub_code (self, code, resolver, mapper);
+    myagnt_context_emit_arm_mach_stub_code (self, code, resolver, mapper);
   else
-    frida_agent_context_emit_arm64_mach_stub_code (self, code, resolver, mapper);
+    myagnt_context_emit_arm64_mach_stub_code (self, code, resolver, mapper);
 }
 
 static void
-frida_agent_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   if (resolver->cpu_type == GUM_CPU_ARM)
-    frida_agent_context_emit_arm_pthread_stub_code (self, code, resolver, mapper);
+    myagnt_context_emit_arm_pthread_stub_code (self, code, resolver, mapper);
   else
-    frida_agent_context_emit_arm64_pthread_stub_code (self, code, resolver, mapper);
+    myagnt_context_emit_arm64_pthread_stub_code (self, code, resolver, mapper);
 }
 
 
@@ -4668,7 +4668,7 @@ frida_agent_context_emit_pthread_stub_code (FridaAgentContext * self, guint8 * c
  */
 
 static void
-frida_agent_context_emit_arm_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_arm_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   FridaAgentEmitContext ctx;
@@ -4677,13 +4677,13 @@ frida_agent_context_emit_arm_mach_stub_code (FridaAgentContext * self, guint8 * 
   gum_thumb_writer_init (&ctx.tw, ctx.code);
   ctx.mapper = mapper;
 
-  frida_agent_context_emit_arm_mach_stub_body (self, &ctx);
+  myagnt_context_emit_arm_mach_stub_body (self, &ctx);
 
   gum_thumb_writer_clear (&ctx.tw);
 }
 
 static void
-frida_agent_context_emit_arm_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_arm_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   FridaAgentEmitContext ctx;
@@ -4694,20 +4694,20 @@ frida_agent_context_emit_arm_pthread_stub_code (FridaAgentContext * self, guint8
 
   gum_thumb_writer_put_push_regs (&ctx.tw, 5, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_LR);
   gum_thumb_writer_put_mov_reg_reg (&ctx.tw, ARM_REG_R7, ARM_REG_R0);
-  frida_agent_context_emit_arm_pthread_stub_body (self, &ctx);
+  myagnt_context_emit_arm_pthread_stub_body (self, &ctx);
   gum_thumb_writer_put_pop_regs (&ctx.tw, 5, ARM_REG_R4, ARM_REG_R5, ARM_REG_R6, ARM_REG_R7, ARM_REG_PC);
 
   gum_thumb_writer_clear (&ctx.tw);
 }
 
 #define EMIT_ARM_LOAD(reg, field) \
-    frida_agent_context_emit_arm_load_reg_with_ctx_value (ARM_REG_##reg, G_STRUCT_OFFSET (FridaAgentContext, field), &ctx->tw)
+    myagnt_context_emit_arm_load_reg_with_ctx_value (ARM_REG_##reg, G_STRUCT_OFFSET (FridaAgentContext, field), &ctx->tw)
 #define EMIT_ARM_LOAD_ADDRESS_OF(reg, field) \
     gum_thumb_writer_put_add_reg_reg_imm (&ctx->tw, ARM_REG_##reg, ARM_REG_R7, G_STRUCT_OFFSET (FridaAgentContext, field))
 #define EMIT_ARM_LOAD_U32(reg, val) \
     gum_thumb_writer_put_ldr_reg_u32 (&ctx->tw, ARM_REG_##reg, val)
 #define EMIT_ARM_STORE(field, reg) \
-    frida_agent_context_emit_arm_store_reg_in_ctx_value (G_STRUCT_OFFSET (FridaAgentContext, field), ARM_REG_##reg, &ctx->tw)
+    myagnt_context_emit_arm_store_reg_in_ctx_value (G_STRUCT_OFFSET (FridaAgentContext, field), ARM_REG_##reg, &ctx->tw)
 #define EMIT_ARM_MOVE(dstreg, srcreg) \
     gum_thumb_writer_put_mov_reg_reg (&ctx->tw, ARM_REG_##dstreg, ARM_REG_##srcreg)
 #define EMIT_ARM_CALL(reg) \
@@ -4716,7 +4716,7 @@ frida_agent_context_emit_arm_pthread_stub_code (FridaAgentContext * self, guint8
     gum_thumb_writer_put_sub_reg_imm (&ctx->tw, ARM_REG_SP, delta * 4)
 
 static void
-frida_agent_context_emit_arm_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
+myagnt_context_emit_arm_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
 {
   const gchar * again = "again";
 
@@ -4758,7 +4758,7 @@ frida_agent_context_emit_arm_mach_stub_body (FridaAgentContext * self, FridaAgen
 }
 
 static void
-frida_agent_context_emit_arm_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
+myagnt_context_emit_arm_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
 {
   const gchar * skip_construction = "skip_construction";
   const gchar * skip_dlopen = "skip_dlopen";
@@ -4868,7 +4868,7 @@ frida_agent_context_emit_arm_pthread_stub_body (FridaAgentContext * self, FridaA
 }
 
 static void
-frida_agent_context_emit_arm_load_reg_with_ctx_value (arm_reg reg, guint field_offset, GumThumbWriter * tw)
+myagnt_context_emit_arm_load_reg_with_ctx_value (arm_reg reg, guint field_offset, GumThumbWriter * tw)
 {
   arm_reg tmp_reg = (reg != ARM_REG_R0) ? ARM_REG_R0 : ARM_REG_R1;
   gum_thumb_writer_put_push_regs (tw, 1, tmp_reg);
@@ -4879,7 +4879,7 @@ frida_agent_context_emit_arm_load_reg_with_ctx_value (arm_reg reg, guint field_o
 }
 
 static void
-frida_agent_context_emit_arm_store_reg_in_ctx_value (guint field_offset, arm_reg reg, GumThumbWriter * tw)
+myagnt_context_emit_arm_store_reg_in_ctx_value (guint field_offset, arm_reg reg, GumThumbWriter * tw)
 {
   arm_reg tmp_reg = (reg != ARM_REG_R0) ? ARM_REG_R0 : ARM_REG_R1;
   gum_thumb_writer_put_push_regs (tw, 1, tmp_reg);
@@ -4895,7 +4895,7 @@ frida_agent_context_emit_arm_store_reg_in_ctx_value (guint field_offset, arm_reg
  */
 
 static void
-frida_agent_context_emit_arm64_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_arm64_mach_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   FridaAgentEmitContext ctx;
@@ -4910,7 +4910,7 @@ frida_agent_context_emit_arm64_mach_stub_code (FridaAgentContext * self, guint8 
   gum_arm64_writer_put_mov_reg_reg (&ctx.aw, ARM64_REG_FP, ARM64_REG_SP);
   gum_arm64_writer_put_push_reg_reg (&ctx.aw, ARM64_REG_X19, ARM64_REG_X20);
   gum_arm64_writer_put_push_reg_reg (&ctx.aw, ARM64_REG_X21, ARM64_REG_X22);
-  frida_agent_context_emit_arm64_mach_stub_body (self, &ctx);
+  myagnt_context_emit_arm64_mach_stub_body (self, &ctx);
   gum_arm64_writer_put_pop_reg_reg (&ctx.aw, ARM64_REG_X21, ARM64_REG_X22);
   gum_arm64_writer_put_pop_reg_reg (&ctx.aw, ARM64_REG_X19, ARM64_REG_X20);
   gum_arm64_writer_put_pop_reg_reg (&ctx.aw, ARM64_REG_FP, ARM64_REG_LR);
@@ -4920,7 +4920,7 @@ frida_agent_context_emit_arm64_mach_stub_code (FridaAgentContext * self, guint8 
 }
 
 static void
-frida_agent_context_emit_arm64_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
+myagnt_context_emit_arm64_pthread_stub_code (FridaAgentContext * self, guint8 * code, GumDarwinModuleResolver * resolver,
     GumDarwinMapper * mapper)
 {
   FridaAgentEmitContext ctx;
@@ -4935,7 +4935,7 @@ frida_agent_context_emit_arm64_pthread_stub_code (FridaAgentContext * self, guin
   gum_arm64_writer_put_mov_reg_reg (&ctx.aw, ARM64_REG_FP, ARM64_REG_SP);
   gum_arm64_writer_put_push_reg_reg (&ctx.aw, ARM64_REG_X19, ARM64_REG_X20);
   gum_arm64_writer_put_mov_reg_reg (&ctx.aw, ARM64_REG_X20, ARM64_REG_X0);
-  frida_agent_context_emit_arm64_pthread_stub_body (self, &ctx);
+  myagnt_context_emit_arm64_pthread_stub_body (self, &ctx);
   gum_arm64_writer_put_pop_reg_reg (&ctx.aw, ARM64_REG_X19, ARM64_REG_X20);
   gum_arm64_writer_put_pop_reg_reg (&ctx.aw, ARM64_REG_FP, ARM64_REG_LR);
   gum_arm64_writer_put_ret (&ctx.aw);
@@ -4956,7 +4956,7 @@ frida_agent_context_emit_arm64_pthread_stub_code (FridaAgentContext * self, guin
     gum_arm64_writer_put_blr_reg_no_auth (&ctx->aw, ARM64_REG_##reg)
 
 static void
-frida_agent_context_emit_arm64_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
+myagnt_context_emit_arm64_mach_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
 {
   const gchar * again = "again";
 
@@ -5008,7 +5008,7 @@ frida_agent_context_emit_arm64_mach_stub_body (FridaAgentContext * self, FridaAg
 }
 
 static void
-frida_agent_context_emit_arm64_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
+myagnt_context_emit_arm64_pthread_stub_body (FridaAgentContext * self, FridaAgentEmitContext * ctx)
 {
   const gchar * skip_construction = "skip_construction";
   const gchar * skip_dlopen = "skip_dlopen";

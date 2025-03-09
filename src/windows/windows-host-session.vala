@@ -114,9 +114,9 @@ namespace Frida {
 			injector.uninjected.connect (on_uninjected);
 
 			agent = new AgentDescriptor (PathTemplate ("<arch>\\myagnt.dll"),
-				new Bytes.static (Frida.Data.Agent.get_frida_agent_arm64_dll_blob ().data),
-				new Bytes.static (Frida.Data.Agent.get_frida_agent_x86_64_dll_blob ().data),
-				new Bytes.static (Frida.Data.Agent.get_frida_agent_x86_dll_blob ().data),
+				new Bytes.static (Frida.Data.Agent.get_myagnt_arm64_dll_blob ().data),
+				new Bytes.static (Frida.Data.Agent.get_myagnt_x86_64_dll_blob ().data),
+				new Bytes.static (Frida.Data.Agent.get_myagnt_x86_dll_blob ().data),
 				new AgentResource[] {
 					new AgentResource ("arm64\\dbghelp.dll",
 						new Bytes.static (Frida.Data.Agent.get_dbghelp_arm64_dll_blob ().data), tempdir),
@@ -292,7 +292,7 @@ namespace Frida {
 			var stream_request = Pipe.open (t.local_address, cancellable);
 
 			var winjector = injector as Winjector;
-			var id = yield winjector.inject_library_resource (pid, agent, "frida_agent_main",
+			var id = yield winjector.inject_library_resource (pid, agent, "myagnt_main",
 				make_agent_parameters (pid, t.remote_address, options), cancellable);
 			injectee_by_pid[pid] = id;
 

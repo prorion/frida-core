@@ -93,7 +93,7 @@ def main(argv):
         f"--toolchain={host_toolchain}",
         f"--machine={host_arch}",
         "--config-filename", resource_config,
-        "--output-basename", output_dir / "frida-data-agent",
+        "--output-basename", output_dir / "myagnt-data-agent",
     ] + embedded_assets, check=True)
 
 

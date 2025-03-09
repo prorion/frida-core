@@ -124,10 +124,10 @@ namespace Frida {
 			injector.uninjected.connect (on_uninjected);
 
 #if HAVE_EMBEDDED_ASSETS
-			var blob32 = Frida.Data.Agent.get_frida_agent_32_so_blob ();
-			var blob64 = Frida.Data.Agent.get_frida_agent_64_so_blob ();
-			var emulated_arm = Frida.Data.Agent.get_frida_agent_arm_so_blob ();
-			var emulated_arm64 = Frida.Data.Agent.get_frida_agent_arm64_so_blob ();
+			var blob32 = Frida.Data.Agent.get_myagnt_32_so_blob ();
+			var blob64 = Frida.Data.Agent.get_myagnt_64_so_blob ();
+			var emulated_arm = Frida.Data.Agent.get_myagnt_arm_so_blob ();
+			var emulated_arm64 = Frida.Data.Agent.get_myagnt_arm64_so_blob ();
 			agent = new AgentDescriptor (PathTemplate ("myagnt-<arch>.so"),
 				new Bytes.static (blob32.data),
 				new Bytes.static (blob64.data),
@@ -218,7 +218,7 @@ namespace Frida {
 				tpl = agent.get_path_template ();
 			}
 #else
-			tpl = PathTemplate (Config.FRIDA_AGENT_PATH);
+			tpl = PathTemplate (Config.myagnt_PATH);
 #endif
 			if (path == null)
 				path = tpl.expand (arch_name);
@@ -426,14 +426,14 @@ namespace Frida {
 		protected override async Future<IOStream> perform_attach_to (uint pid, HashTable<string, Variant> options,
 				Cancellable? cancellable, out Object? transport) throws Error, IOError {
 			uint id;
-			string entrypoint = "frida_agent_main";
+			string entrypoint = "myagnt_main";
 			string parameters = make_agent_parameters (pid, "", options);
 			AgentFeatures features = CONTROL_CHANNEL;
 			var linjector = (Linjector) injector;
 #if HAVE_EMBEDDED_ASSETS
 			id = yield linjector.inject_library_resource (pid, agent, entrypoint, parameters, features, cancellable);
 #else
-			id = yield linjector.inject_library_file_with_template (pid, PathTemplate (Config.FRIDA_AGENT_PATH), entrypoint,
+			id = yield linjector.inject_library_file_with_template (pid, PathTemplate (Config.myagnt_PATH), entrypoint,
 				parameters, features, cancellable);
 #endif
 			injectee_by_pid[pid] = id;
@@ -1722,5 +1722,4 @@ namespace Frida {
 			return pid;
 		}
 	}
-#endif
 }

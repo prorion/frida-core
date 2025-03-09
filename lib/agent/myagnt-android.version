@@ -1,6 +1,6 @@
 {
   global:
-    frida_agent_main;
+    myagnt_main;
     JNI_OnLoad;
 
   local:
