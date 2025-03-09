@@ -72,7 +72,7 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 {
   FridaAgentBridgeState * state = reserved;
 
-  _myagnt_main (state->agent_parameters, &state->unload_policy, state->injector_state);
+  myagnt_main (state->agent_parameters, &state->unload_policy, state->injector_state);
 
   return JNI_VERSION_1_6;
 }
