@@ -1,21 +1,21 @@
 #include "frida-tests.h"
 
-int myagnt_test_script_dummy_global_to_trick_optimizer = 0;
+int frida_agent_test_script_dummy_global_to_trick_optimizer = 0;
 
 guint
-myagnt_test_script_target_function (gint level, const gchar * message)
+frida_agent_test_script_target_function (gint level, const gchar * message)
 {
   guint bogus_result = 0, i;
 
   (void) level;
   (void) message;
 
-  myagnt_test_script_dummy_global_to_trick_optimizer += level;
+  frida_agent_test_script_dummy_global_to_trick_optimizer += level;
 
   for (i = 0; i != 42; i++)
     bogus_result += i;
 
-  myagnt_test_script_dummy_global_to_trick_optimizer *= bogus_result;
+  frida_agent_test_script_dummy_global_to_trick_optimizer *= bogus_result;
 
   return bogus_result;
 }
@@ -25,19 +25,19 @@ myagnt_test_script_target_function (gint level, const gchar * message)
 #include <gum/gumdarwin.h>
 
 guint
-myagnt_test_script_get_current_thread_id (void)
+frida_agent_test_script_get_current_thread_id (void)
 {
   return pthread_mach_thread_np (pthread_self ());
 }
 
 void
-myagnt_test_script_thread_suspend (guint thread_id)
+frida_agent_test_script_thread_suspend (guint thread_id)
 {
   thread_suspend (thread_id);
 }
 
 void
-myagnt_test_script_thread_resume (guint thread_id)
+frida_agent_test_script_thread_resume (guint thread_id)
 {
   thread_resume (thread_id);
 }

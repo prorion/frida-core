@@ -118,7 +118,7 @@ namespace Frida {
 #if HAVE_EMBEDDED_ASSETS
 				return null;
 #else
-				unowned string path = Config.myagnt_PATH;
+				unowned string path = Config.FRIDA_AGENT_PATH;
 # if IOS || TVOS
 				unowned string? cryptex_path = Environment.get_variable ("CRYPTEX_MOUNT_PATH");
 				if (cryptex_path != null)
@@ -165,7 +165,7 @@ namespace Frida {
 			injector.uninjected.connect (on_uninjected);
 
 #if HAVE_EMBEDDED_ASSETS
-			var blob = Frida.Data.Agent.get_myagnt_dylib_blob ();
+			var blob = Frida.Data.Agent.get_frida_agent_dylib_blob ();
 			agent = new AgentResource (blob.name, new Bytes.static (blob.data), tempdir);
 #endif
 
@@ -381,7 +381,7 @@ namespace Frida {
 		private async uint inject_agent (uint pid, string agent_parameters, Cancellable? cancellable) throws Error, IOError {
 			uint id;
 
-			unowned string entrypoint = "myagnt_main";
+			unowned string entrypoint = "frida_agent_main";
 #if HAVE_EMBEDDED_ASSETS
 			id = yield fruitjector.inject_library_resource (pid, agent, entrypoint, agent_parameters, cancellable);
 #else

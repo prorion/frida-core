@@ -1,6 +1,6 @@
 {
   global:
-    myagnt_main;
+    frida_agent_main;
 
   local:
     *;

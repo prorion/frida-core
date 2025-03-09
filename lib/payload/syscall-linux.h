@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __myagnt_SYSCALL_LINUX_H__
-#define __myagnt_SYSCALL_LINUX_H__
+#ifndef __FRIDA_AGENT_SYSCALL_LINUX_H__
+#define __FRIDA_AGENT_SYSCALL_LINUX_H__
 
 #include <asm/unistd.h> /* For system call numbers. */
 #define FRIDA_MAX_ERRNO 4095  /* For recognizing system call error returns. */
@@ -67,4 +67,4 @@
     .globl alias; \
     .equ alias, original
 
-#endif /* __myagnt_SYSCALL_LINUX_H__ */
+#endif /* __FRIDA_AGENT_SYSCALL_LINUX_H__ */
