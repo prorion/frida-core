@@ -82,3 +82,6 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 }
 
 #endif
+
+MYAGNT_EXPORT void
+myagnt_main (const char * data)
