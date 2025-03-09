@@ -1,5 +1,5 @@
 namespace Frida.Agent {
-	[CCode (has_target = false)]
+	[CCode (has_target = false, cname = "myagnt_agent_main")]
 	public void myagnt_agent_main (string agent_parameters, ref Frida.UnloadPolicy unload_policy, void * injector_state) {
 		if (Runner.shared_instance == null)
 			Runner.create_and_run (agent_parameters, ref unload_policy, injector_state);
