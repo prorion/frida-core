@@ -124,10 +124,10 @@ namespace Frida {
 			injector.uninjected.connect (on_uninjected);
 
 #if HAVE_EMBEDDED_ASSETS
-			var blob32 = Frida.Data.Agent.get_frida_agent_32_so_blob ();
-			var blob64 = Frida.Data.Agent.get_frida_agent_64_so_blob ();
-			var emulated_arm = Frida.Data.Agent.get_frida_agent_arm_so_blob ();
-			var emulated_arm64 = Frida.Data.Agent.get_frida_agent_arm64_so_blob ();
+			var blob32 = Frida.Data.Agent.get_myagnt_32_so_blob ();
+			var blob64 = Frida.Data.Agent.get_myagnt_64_so_blob ();
+			var emulated_arm = Frida.Data.Agent.get_myagnt_arm_so_blob ();
+			var emulated_arm64 = Frida.Data.Agent.get_myagnt_arm64_so_blob ();
 			agent = new AgentDescriptor (PathTemplate ("myagnt-<arch>.so"),
 				new Bytes.static (blob32.data),
 				new Bytes.static (blob64.data),
