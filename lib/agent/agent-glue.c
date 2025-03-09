@@ -13,6 +13,12 @@
 # include <gioopenssl.h>
 #endif
 
+#ifdef _WIN32
+# define MYAGNT_EXPORT __declspec(dllexport)
+#else
+# define MYAGNT_EXPORT __attribute__((visibility("default")))
+#endif
+
 extern void myagnt_agent_main (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
 
 void

@@ -1,9 +1,3 @@
-#ifdef _WIN32
-# define MYAGNT_EXPORT __declspec(dllexport)
-#else
-# define MYAGNT_EXPORT __attribute__((visibility("default")))
-#endif
-
 namespace Frida.Agent {
 	[CCode (has_target = false, cname = "myagnt_agent_main")]
 	public void myagnt_agent_main (string agent_parameters, ref Frida.UnloadPolicy unload_policy, void * injector_state) {
