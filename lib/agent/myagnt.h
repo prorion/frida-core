@@ -11,6 +11,12 @@
 
 G_BEGIN_DECLS
 
+typedef enum {
+  FRIDA_UNLOAD_POLICY_IMMEDIATE,
+  FRIDA_UNLOAD_POLICY_RESIDENT,
+  FRIDA_UNLOAD_POLICY_DEFERRED
+} FridaUnloadPolicy;
+
 MYAGNT_EXPORT void myagnt_init_memory (void);
 MYAGNT_EXPORT void myagnt_deinit_memory (void);
 MYAGNT_EXPORT void myagnt_main (const char * data);

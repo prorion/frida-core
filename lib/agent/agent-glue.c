@@ -19,10 +19,19 @@
 # define MYAGNT_EXPORT __attribute__((visibility("default")))
 #endif
 
+typedef struct _FridaAgentBridgeState FridaAgentBridgeState;
+
+struct _FridaAgentBridgeState {
+  gchar * agent_parameters;
+  FridaUnloadPolicy unload_policy;
+  void * injector_state;
+};
+
 static FridaUnloadPolicy unload_policy = FRIDA_UNLOAD_POLICY_IMMEDIATE;
 static void * injector_state = NULL;
 
 extern void myagnt_agent_main (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
+extern void _frida_agent_myagnt_agent_on_pending_thread_garbage (void * data);
 
 // Forward declaration
 MYAGNT_EXPORT void myagnt_main (const char * data);
@@ -86,7 +95,7 @@ myagnt_deinit_memory (void)
 jint
 JNI_OnLoad (JavaVM * vm, void * reserved)
 {
-  FridaAgentBridgeState * state = reserved;
+  FridaAgentBridgeState * state = (FridaAgentBridgeState *) reserved;
 
   myagnt_agent_main (state->agent_parameters, &state->unload_policy, state->injector_state);
 
