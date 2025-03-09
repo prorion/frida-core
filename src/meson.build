@@ -463,13 +463,13 @@ if have_local_backend
       agent_emulated_legacy = ''
     endif
 
-    backend_sources += custom_target('frida-data-agent',
+    backend_sources += custom_target('myagnt-data-agent',
       input: 'agent.resources',
       output: [
-        'frida-data-agent-blob' + resource_blob_extension,
-        'frida-data-agent.vapi',
-        'frida-data-agent.h',
-        'frida-data-agent.c',
+        'myagnt-data-agent-blob' + resource_blob_extension,
+        'myagnt-data-agent.vapi',
+        'myagnt-data-agent.h',
+        'myagnt-data-agent.c',
       ],
       command: [
         python,
