@@ -1896,14 +1896,14 @@ _frida_darwin_helper_backend_prepare_spawn_instance_for_injection (FridaDarwinHe
    * We POSIX_SPAWN_START_SUSPENDED which means that the kernel will create
    * the task and its main thread, with the main thread's instruction pointer
    * pointed at __dyld_start. At this point neither dyld nor libc have been
-   * initialized, so we won't be able to inject myagnt at this point.
+   * initialized, so we won't be able to inject frida-agent at this point.
    *
    * So here's what we'll do before we try to inject our dylib:
    * - Get hold of the main thread to read its instruction pointer, which will
    *   tell us where dyld is in memory.
    * - Walk backwards to find dyld's Mach-O header.
    * - Walk its symbols and find a function that's called at a point where the process is
-   *   sufficiently initialized to load myagnt, but still early enough so the app's
+   *   sufficiently initialized to load frida-agent, but still early enough so the app's
    *   initializer(s) didn't get a chance to run.
    * - For processes using dyld v3's closure support we put a hardware breakpoint inside
    *   dyld::launchWithClosure() right after setInitialImageList() has been called.

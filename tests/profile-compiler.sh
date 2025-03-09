@@ -32,7 +32,7 @@ sudo --preserve-env=FRIDA_TEST_LOG,FRIDA_V8_EXTRA_FLAGS dtrace \
   --output "$stacks_symbolicated" \
   --test-log "$test_log" \
   --v8-log "$v8_log" \
-  --agent "$builddir/lib/agent/libmyagnt-modulated.dylib"
+  --agent "$builddir/lib/agent/libfrida-agent-modulated.dylib"
 "$flamegraph/stackcollapse.pl" "$stacks_symbolicated" \
   | grep gum_script_scheduler_run_js_loop \
   > "$stacks_folded"

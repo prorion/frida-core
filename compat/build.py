@@ -213,7 +213,7 @@ def setup(role: Role,
                            file=HELPER_FILE_UNIX,
                            target=HELPER_TARGET),
                     Output(identifier=f"agent_{kind}",
-                           name=f"myagnt-{other_arch}.dylib",
+                           name=f"frida-agent-{other_arch}.dylib",
                            file=AGENT_FILE_DARWIN,
                            target=AGENT_TARGET),
                 ]
@@ -298,14 +298,14 @@ def setup(role: Role,
             if host_os == "android" and host_arch in {"x86_64", "x86"}:
                 outputs[OutputGroup("arm")] = [
                     Output(identifier="agent_emulated_legacy",
-                           name="myagnt-arm.so",
+                           name="frida-agent-arm.so",
                            file=AGENT_FILE_ELF,
                            target=AGENT_TARGET),
                 ]
                 if host_arch == "x86_64":
                     outputs[OutputGroup("arm64")] = [
                         Output(identifier="agent_emulated_modern",
-                               name="myagnt-arm64.so",
+                               name="frida-agent-arm64.so",
                                file=AGENT_FILE_ELF,
                                target=AGENT_TARGET),
                     ]
@@ -636,10 +636,10 @@ HELPER_TARGET = "frida-helper"
 HELPER_FILE_WINDOWS = Path("src") / "frida-helper.exe"
 HELPER_FILE_UNIX = Path("src") / "frida-helper"
 
-AGENT_TARGET = "myagnt"
-AGENT_FILE_WINDOWS = Path("lib") / "agent" / "myagnt.dll"
-AGENT_FILE_DARWIN = Path("lib") / "agent" / "myagnt.dylib"
-AGENT_FILE_ELF = Path("lib") / "agent" / "myagnt.so"
+AGENT_TARGET = "frida-agent"
+AGENT_FILE_WINDOWS = Path("lib") / "agent" / "frida-agent.dll"
+AGENT_FILE_DARWIN = Path("lib") / "agent" / "frida-agent.dylib"
+AGENT_FILE_ELF = Path("lib") / "agent" / "frida-agent.so"
 
 GADGET_TARGET = "frida-gadget"
 GADGET_FILE_WINDOWS = Path("lib") / "gadget" / "frida-gadget.dll"

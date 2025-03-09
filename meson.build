@@ -192,7 +192,7 @@ else
 endif
 
 helper_name = 'frida-helper' + exe_suffix
-agent_name = 'myagnt' + shlib_suffix
+agent_name = 'frida-agent' + shlib_suffix
 gadget_name = 'frida-gadget' + shlib_suffix
 
 root_asset_dir = get_option('libdir') / 'frida'

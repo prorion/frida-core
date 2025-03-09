@@ -42,7 +42,7 @@ namespace Frida.CompilerTest {
 					test_log.printf ("build-time,%u\n", elapsed_msec);
 
 					Gum.Process.enumerate_modules (m => {
-						if ("myagnt" in m.path) {
+						if ("frida-agent" in m.path) {
 							var r = m.range;
 							test_log.printf (("agent-range,0x%" + uint64.FORMAT_MODIFIER + "x,0x%" +
 									uint64.FORMAT_MODIFIER + "x\n"),
@@ -112,7 +112,7 @@ namespace Frida.CompilerTest {
 					test_log.printf ("build-time,%u\n", elapsed_msec);
 
 					Gum.Process.enumerate_modules (m => {
-						if ("myagnt" in m.path) {
+						if ("frida-agent" in m.path) {
 							var r = m.range;
 							test_log.printf (("agent-range,0x%" + uint64.FORMAT_MODIFIER + "x,0x%" +
 									uint64.FORMAT_MODIFIER + "x\n"),

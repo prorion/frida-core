@@ -19,7 +19,7 @@ if [ ! -f "$executable" ]; then
   exit 4
 fi
 
-agent=$prefix/usr/lib/frida/myagnt.dylib
+agent=$prefix/usr/lib/frida/frida-agent.dylib
 if [ ! -f "$agent" ]; then
   echo "$agent: not found" > /dev/stderr
   exit 5
@@ -49,8 +49,8 @@ cp "$executable" "$bindir/frida-server"
 chmod 755 "$bindir/frida-server"
 
 mkdir -p "$libdir/"
-cp "$agent" "$libdir/myagnt.dylib"
-chmod 755 "$libdir/myagnt.dylib"
+cp "$agent" "$libdir/frida-agent.dylib"
+chmod 755 "$libdir/frida-agent.dylib"
 
 mkdir -p "$daedir/"
 (

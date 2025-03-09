@@ -21,14 +21,14 @@ endif
 
 if host_os_family == 'windows'
   if host_toolchain != 'microsoft'
-    symfile = (host_arch == 'x86') ? 'myagnt-x86.symbols' : 'myagnt.symbols'
+    symfile = (host_arch == 'x86') ? 'frida-agent-x86.symbols' : 'frida-agent.symbols'
     extra_link_args += '-Wl,--retain-symbols-file,' + meson.current_source_dir() / symfile
     extra_link_depends += symfile
   endif
 elif host_os_family == 'darwin'
   extra_link_args += '-Wl,-exported_symbol,_frida_agent_main'
 else
-  symscript = (host_os == 'android') ? 'myagnt-android.version' : 'myagnt.version'
+  symscript = (host_os == 'android') ? 'frida-agent-android.version' : 'frida-agent.version'
   extra_link_args += '-Wl,--version-script,' + meson.current_source_dir() / symscript
   extra_link_depends += symscript
 endif
@@ -38,14 +38,14 @@ if host_os_family in ['linux', 'qnx']
   extra_link_args += '-Wl,-Bsymbolic'
 endif
 
-raw_agent = shared_library('myagnt-raw', agent_sources,
+raw_agent = shared_library('frida-agent-raw', agent_sources,
   name_prefix: 'lib',
   c_args: frida_component_cflags,
-  vala_header: 'myagnt.h',
+  vala_header: 'frida-agent.h',
   vala_args: [base_vala_args, payload_vala_args, extra_vala_args],
   link_args: extra_link_args,
   link_depends: extra_link_depends,
-  vs_module_defs: 'myagnt.def',
+  vs_module_defs: 'frida-agent.def',
   override_options: ['b_asneeded=true'],
   dependencies: [gio_dep, gee_dep, gum_dep, gumjs_dep, base_dep, pipe_dep, tls_provider_dep, payload_dep],
 )
@@ -54,9 +54,9 @@ operations = ['--move', 'constructor', 'frida_init_memory', 'first']
 if host_os_family != 'darwin'
   operations += ['--move', 'destructor', 'frida_deinit_memory', 'first']
 endif
-modulated_agent = custom_target('myagnt-modulated',
+modulated_agent = custom_target('frida-agent-modulated',
   input: raw_agent,
-  output: 'libmyagnt-modulated' + shlib_suffix,
+  output: 'libfrida-agent-modulated' + shlib_suffix,
   command: modulate + operations,
 )
 
@@ -69,7 +69,7 @@ if host_os_family == 'darwin'
 else
   identity = agent_name
 endif
-agent = custom_target('myagnt',
+agent = custom_target('frida-agent',
   input: modulated_agent,
   output: need_universal_agent ? f'@agent_name@-@host_abi@' : agent_name,
   command: post_process + ['shared-library', identity],
@@ -81,7 +81,7 @@ agent = custom_target('myagnt',
 agent_dep = declare_dependency(link_with: agent)
 
 if need_universal_agent
-  custom_target('myagnt-universal',
+  custom_target('frida-agent-universal',
     input: agent,
     output: agent_name,
     command: [
