@@ -1,5 +1,5 @@
 namespace Frida.Agent {
-	public void main (string agent_parameters, ref Frida.UnloadPolicy unload_policy, void * injector_state) {
+	public void myagnt_agent_main (string agent_parameters, ref Frida.UnloadPolicy unload_policy, void * injector_state) {
 		if (Runner.shared_instance == null)
 			Runner.create_and_run (agent_parameters, ref unload_policy, injector_state);
 		else
@@ -1670,7 +1670,7 @@ namespace Frida.Agent {
 	private uint gc_generation = 0;
 	private bool gc_scheduled = false;
 
-	public void _on_pending_thread_garbage (void * data) {
+	public void _myagnt_agent_on_pending_thread_garbage (void * data) {
 		gc_mutex.lock ();
 		gc_generation++;
 		bool already_scheduled = gc_scheduled;
