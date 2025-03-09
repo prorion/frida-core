@@ -1,9 +1,7 @@
 {
   global:
-    myagnt_main;
+    frida_agent_main;
     JNI_OnLoad;
-    myagnt_init_memory;
-    myagnt_deinit_memory;
 
   local:
     *;
