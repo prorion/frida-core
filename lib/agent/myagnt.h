@@ -7,7 +7,7 @@
 #ifdef _WIN32
 # define MYAGNT_EXPORT __declspec(dllexport)
 #else
-# define MYAGNT_EXPORT __attribute__((visibility("default")))
+# define MYAGNT_EXPORT extern __attribute__((visibility("default")))
 #endif
 
 G_BEGIN_DECLS

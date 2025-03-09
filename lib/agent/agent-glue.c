@@ -104,7 +104,7 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 
 #endif
 
-MYAGNT_EXPORT void
+void
 myagnt_main (const char * data)
 {
     myagnt_agent_main (data, &unload_policy, injector_state);
