@@ -24,6 +24,9 @@ static void * injector_state = NULL;
 
 extern void myagnt_agent_main (const gchar * agent_parameters, FridaUnloadPolicy * unload_policy, void * injector_state);
 
+// Forward declaration
+MYAGNT_EXPORT void myagnt_main (const char * data);
+
 void
 myagnt_init_memory (void)
 {
@@ -95,5 +98,5 @@ JNI_OnLoad (JavaVM * vm, void * reserved)
 MYAGNT_EXPORT void
 myagnt_main (const char * data)
 {
-  myagnt_agent_main (data, &unload_policy, injector_state);
+    myagnt_agent_main (data, &unload_policy, injector_state);
 }
